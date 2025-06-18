@@ -25,6 +25,10 @@ class LoginUseCase {
 
 // Provider
 final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return LoginUseCase(repository);
+  final repositoryAsync = ref.watch(authRepositoryProvider);
+  return repositoryAsync.when(
+    data: (repository) => LoginUseCase(repository),
+    loading: () => throw Exception('AuthRepository loading'),
+    error: (e, st) => throw Exception('AuthRepository error: $e'),
+  );
 });

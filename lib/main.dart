@@ -11,6 +11,15 @@ import 'package:flutter_riverpod_clean_architecture/l10n/app_localizations_deleg
 import 'package:flutter_riverpod_clean_architecture/l10n/l10n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+// Provider for SharedPreferences
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+// Provider to manage theme mode
+final themeModeProvider = StateProvider<ThemeMode>((ref) {
+  return ThemeMode.system;
+});
 void main() async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +32,7 @@ void main() async {
     ProviderScope(
       overrides: [
         // Override the shared preferences provider with the instance
-        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        sharedPreferencesProvider.overrideWith((ref) => sharedPreferences),
 
         // Override the default locale provider to use our persistent locale
         defaultLocaleProvider.overrideWith(
@@ -35,15 +44,9 @@ void main() async {
   );
 }
 
-// Provider for SharedPreferences
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError();
-});
 
-// Provider to manage theme mode
-final themeModeProvider = StateProvider<ThemeMode>((ref) {
-  return ThemeMode.system;
-});
+
+
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});

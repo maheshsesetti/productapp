@@ -141,11 +141,11 @@ class AuthRepositoryImpl implements AuthRepository {
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
 // Using sharedPreferencesProvider from main.dart
-
-final localStorageServiceProvider = Provider<LocalStorageService>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
+final localStorageServiceProvider = FutureProvider<LocalStorageService>((ref) async {
+  final prefs = await ref.watch(sharedPreferencesProvider.future);
   return LocalStorageService(prefs);
 });
+
 
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService.create();
@@ -158,10 +158,14 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
 });
 
 // Repository provider
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
+final authRepositoryProvider = FutureProvider<AuthRepository>((ref) async {
+  final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
+  final localStorageService = await ref.watch(localStorageServiceProvider.future);
+  final secureStorageService = ref.watch(secureStorageServiceProvider);
+
   return AuthRepositoryImpl(
-    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
-    localStorageService: ref.watch(localStorageServiceProvider),
-    secureStorageService: ref.watch(secureStorageServiceProvider),
+    remoteDataSource: remoteDataSource,
+    localStorageService: localStorageService,
+    secureStorageService: secureStorageService,
   );
 });

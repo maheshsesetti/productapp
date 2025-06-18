@@ -28,6 +28,6 @@ class RegisterUseCase {
 
 // Provider
 final registerUseCaseProvider = Provider<RegisterUseCase>((ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return RegisterUseCase(repository);
+  final repositoryAsync = ref.watch(authRepositoryProvider);
+  return RegisterUseCase(repositoryAsync.requireValue);
 });

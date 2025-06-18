@@ -16,6 +16,9 @@ class LogoutUseCase {
 
 // Provider
 final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return LogoutUseCase(repository);
+  final repositoryAsync = ref.watch(authRepositoryProvider);
+  return repositoryAsync.maybeWhen(
+    data: (repository) => LogoutUseCase(repository),
+    orElse: () => throw Exception('AuthRepository not available'),
+  );
 });
